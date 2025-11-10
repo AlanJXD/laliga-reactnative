@@ -17,5 +17,5 @@ export default function DetallePartidoScreen({ route }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 },
-  title: { fontSize: 22, fontWeight: '600', marginBottom: 6 },
+  title: { fontSize: 22, fontWeight: '600', marginBottom: 6, fontFamily: 'System' },
 });

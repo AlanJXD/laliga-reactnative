@@ -3,11 +3,6 @@ import React from "react";
 import { Pressable, Platform } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { BlurView } from "expo-blur";
-import Animated, {
-  useSharedValue,
-  withTiming,
-  useAnimatedStyle,
-} from "react-native-reanimated";
 
 import type { RootTabParamList } from "../types/navigation";
 import PartidosStack from "../navigation/stacks/PartidosStack";
@@ -72,7 +67,7 @@ function TabButton(props: any) {
   );
 }
 
-/** Icono animado con zoom + fix de baseline para SVG en web */
+/** Icono simple sin animación */
 function IconWithBounce({
   routeName,
   focused,
@@ -82,15 +77,6 @@ function IconWithBounce({
   focused: boolean;
   color: string;
 }) {
-  const scale = useSharedValue(focused ? 1.15 : 1);
-  React.useEffect(() => {
-    scale.value = withTiming(focused ? 1.15 : 1, { duration: 150 });
-  }, [focused]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
   const iconProps = { width: 26, height: 26, color };
   let Icon: React.ComponentType<any>;
   if (routeName === "Partidos") Icon = focused ? CalendarDaysIconSolid : CalendarDaysIcon;
@@ -101,19 +87,7 @@ function IconWithBounce({
   const svgFix = Platform.OS === "web" ? { display: "block" } : undefined;
 
   return (
-    <Animated.View
-      style={[
-        animatedStyle,
-        {
-          height: "100%",
-          alignSelf: "stretch",
-          alignItems: "center",
-          justifyContent: "center",
-        },
-      ]}
-    >
-      <Icon {...iconProps} style={svgFix} />
-    </Animated.View>
+    <Icon {...iconProps} style={svgFix} />
   );
 }
 

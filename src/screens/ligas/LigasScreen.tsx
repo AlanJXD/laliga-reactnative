@@ -14,27 +14,21 @@ const ligas: Liga[] = [
 
 export default function LigasScreen({ navigation }: Props) {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Ligas</Text>
+    <View className="flex-1 bg-background p-4">
+      <Text className="text-2xl font-semibold mb-3">Ligas</Text>
       <FlatList
         data={ligas}
         keyExtractor={(i) => i.id}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={styles.item}
+            className="p-4 rounded-lg border border-gray-300 bg-white"
             onPress={() => navigation.navigate('DetalleLiga', { id: item.id })}
           >
             <Text>{item.nombre}</Text>
           </TouchableOpacity>
         )}
-        ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+        ItemSeparatorComponent={() => <View className="h-2" />}
       />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  title: { fontSize: 24, fontWeight: '600', marginBottom: 12 },
-  item: { padding: 16, borderRadius: 8, borderWidth: 1, borderColor: '#ddd' },
-});
