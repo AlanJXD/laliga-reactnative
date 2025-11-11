@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,8 +9,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
+  Animated,
 } from 'react-native';
-import Animated, { FadeInUp, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import {
   CheckCircleIcon,
   EyeIcon,
@@ -35,17 +35,15 @@ export default function RegistroPasswordScreen({ navigation, route }: Props) {
     acceptTerms: false,
   });
 
-  const progressWidth = useSharedValue(0);
+  const progressWidth = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    progressWidth.value = withTiming(100, { duration: 800 });
+    Animated.timing(progressWidth, {
+      toValue: 100,
+      duration: 800,
+      useNativeDriver: false,
+    }).start();
   }, []);
-
-  const animatedProgressStyle = useAnimatedStyle(() => {
-    return {
-      width: `${progressWidth.value}%`,
-    };
-  });
 
   // Validaciones de contraseña simplificadas
   const hasMinLength = password.length >= 8;
@@ -120,7 +118,15 @@ export default function RegistroPasswordScreen({ navigation, route }: Props) {
               </Text>
             </View>
             <View style={styles.progressBarBackground}>
-              <Animated.View style={[styles.progressBarFilled, animatedProgressStyle]} />
+              <Animated.View
+                style={[
+                  styles.progressBarFilled,
+                  { width: progressWidth.interpolate({
+                    inputRange: [0, 100],
+                    outputRange: ['0%', '100%']
+                  })}
+                ]}
+              />
             </View>
           </View>
 
@@ -133,7 +139,7 @@ export default function RegistroPasswordScreen({ navigation, route }: Props) {
           </Text>
 
           {/* Formulario */}
-          <Animated.View entering={FadeInUp.delay(300).duration(600)} style={styles.formContainer}>
+          <View style={styles.formContainer}>
             {/* Contraseña */}
             <View>
               <View style={styles.labelRow}>
@@ -243,7 +249,7 @@ export default function RegistroPasswordScreen({ navigation, route }: Props) {
                 </Text>
               </TouchableOpacity>
             </View>
-          </Animated.View>
+          </View>
 
           {/* Botones */}
           <View style={styles.buttonContainer}>

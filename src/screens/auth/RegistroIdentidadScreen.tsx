@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,9 +10,9 @@ import {
   Platform,
   Image,
   StyleSheet,
+  Animated,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import Animated, { FadeInUp, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { CheckCircleIcon, ChevronDownIcon } from 'react-native-heroicons/solid';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../types/navigation';
@@ -36,17 +36,15 @@ export default function RegistroIdentidadScreen({ navigation }: Props) {
     ciudad: false,
   });
 
-  const progressWidth = useSharedValue(0);
+  const progressWidth = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    progressWidth.value = withTiming(33.33, { duration: 800 });
+    Animated.timing(progressWidth, {
+      toValue: 33.33,
+      duration: 800,
+      useNativeDriver: false,
+    }).start();
   }, []);
-
-  const animatedProgressStyle = useAnimatedStyle(() => {
-    return {
-      width: `${progressWidth.value}%`,
-    };
-  });
 
   const handleContinuar = () => {
     const newErrors = {
@@ -102,7 +100,15 @@ export default function RegistroIdentidadScreen({ navigation }: Props) {
               </Text>
             </View>
             <View style={styles.progressBarBackground}>
-              <Animated.View style={[styles.progressBarFilled, animatedProgressStyle]} />
+              <Animated.View
+                style={[
+                  styles.progressBarFilled,
+                  { width: progressWidth.interpolate({
+                    inputRange: [0, 100],
+                    outputRange: ['0%', '100%']
+                  })}
+                ]}
+              />
             </View>
           </View>
 
@@ -115,7 +121,7 @@ export default function RegistroIdentidadScreen({ navigation }: Props) {
           </Text>
 
           {/* Formulario */}
-          <Animated.View entering={FadeInUp.delay(500).duration(600)} style={styles.formContainer}>
+          <View style={styles.formContainer}>
             {/* Nombre */}
             <View>
               <View style={styles.labelRow}>
@@ -234,7 +240,7 @@ export default function RegistroIdentidadScreen({ navigation }: Props) {
                 <ChevronDownIcon size={20} color="#64748b" />
               </TouchableOpacity>
             </View>
-          </Animated.View>
+          </View>
 
           {/* Botones */}
           <View style={styles.buttonContainer}>

@@ -34,19 +34,9 @@ export type RootStackParamList = {
 
 // Tabs
 export type RootTabParamList = {
-    Partidos: undefined;
-    Ligas: undefined;
+    Inicio: undefined;
+    Equipos: undefined;
+    Torneos: undefined;
     Perfil: undefined;
-  };
-
-  // Stacks
-  export type PartidosStackParamList = {
-    PartidosMain: undefined;
-    DetallePartido: { id: string };
-  };
-
-  export type LigasStackParamList = {
-    LigasMain: undefined;
-    DetalleLiga: { id: string };
   };
   

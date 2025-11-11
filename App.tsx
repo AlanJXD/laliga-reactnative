@@ -24,7 +24,7 @@ export default function App() {
           initialRouteName="Bienvenida"
           screenOptions={{
             headerShown: false,
-            animation: 'fade_from_bottom',
+            animation: 'default', // Usa animaciones nativas de iOS/Android
           }}
         >
           {/* Pantallas de autenticación */}

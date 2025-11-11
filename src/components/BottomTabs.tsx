@@ -1,33 +1,34 @@
 // src/navigation/BottomTabs.tsx
 import React from "react";
-import { Pressable, Platform } from "react-native";
+import { Pressable, Platform, StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { BlurView } from "expo-blur";
 
 import type { RootTabParamList } from "../types/navigation";
-import PartidosStack from "../navigation/stacks/PartidosStack";
-import LigasStack from "../navigation/stacks/LigasStack";
+import InicioScreen from "../screens/inicio/InicioScreen";
+import EquiposScreen from "../screens/equipos/EquiposScreen";
+import TorneosScreen from "../screens/torneos/TorneosScreen";
 import PerfilScreen from "../screens/perfil/PerfilScreen";
-import TabSlideWrapper from "../components/TabSlideWrapper";
 
 import {
-  CalendarDaysIcon,
+  HomeIcon,
+  UserGroupIcon,
   TrophyIcon,
   UserIcon,
 } from "react-native-heroicons/outline";
 import {
-  CalendarDaysIcon as CalendarDaysIconSolid,
+  HomeIcon as HomeIconSolid,
+  UserGroupIcon as UserGroupIconSolid,
   TrophyIcon as TrophyIconSolid,
   UserIcon as UserIconSolid,
 } from "react-native-heroicons/solid";
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
-/** Botón de tab personalizado — usa Pressable también en web (sin recarga) */
+/** Botón de tab personalizado */
 function TabButton(props: any) {
   const { children, onPress, onLongPress, accessibilityState, ...rest } = props;
 
-  // En web prevenimos navegación dura y limpiamos props que puedan generar <a>
   const cleanRest = { ...rest };
   if (Platform.OS === "web") {
     delete (cleanRest as any).href;
@@ -48,18 +49,8 @@ function TabButton(props: any) {
       role="tab"
       accessibilityState={accessibilityState}
       style={({ pressed }) => [
-        {
-          // Ocupa toda la celda sin padding “fantasma”
-          flex: 1,
-          height: "100%",
-          alignSelf: "stretch",
-          padding: 0,
-          margin: 0,
-          alignItems: "center",
-          justifyContent: "center",
-          outlineStyle: "none" as any,
-          opacity: pressed ? 0.8 : 1,
-        },
+        styles.tabButton,
+        { opacity: pressed ? 0.8 : 1 },
       ]}
     >
       {children}
@@ -67,7 +58,7 @@ function TabButton(props: any) {
   );
 }
 
-/** Icono simple sin animación */
+/** Icono con estilo glass */
 function IconWithBounce({
   routeName,
   focused,
@@ -77,13 +68,14 @@ function IconWithBounce({
   focused: boolean;
   color: string;
 }) {
-  const iconProps = { width: 26, height: 26, color };
+  const iconProps = { width: 24, height: 24, color };
   let Icon: React.ComponentType<any>;
-  if (routeName === "Partidos") Icon = focused ? CalendarDaysIconSolid : CalendarDaysIcon;
-  else if (routeName === "Ligas") Icon = focused ? TrophyIconSolid : TrophyIcon;
+  
+  if (routeName === "Inicio") Icon = focused ? HomeIconSolid : HomeIcon;
+  else if (routeName === "Equipos") Icon = focused ? UserGroupIconSolid : UserGroupIcon;
+  else if (routeName === "Torneos") Icon = focused ? TrophyIconSolid : TrophyIcon;
   else Icon = focused ? UserIconSolid : UserIcon;
 
-  // Quita espacio de baseline del <svg> en web
   const svgFix = Platform.OS === "web" ? { display: "block" } : undefined;
 
   return (
@@ -91,88 +83,91 @@ function IconWithBounce({
   );
 }
 
-// Wrappers con slide lateral del contenido
-function PartidosTab() {
-  return (
-    <TabSlideWrapper routeName="Partidos">
-      <PartidosStack />
-    </TabSlideWrapper>
-  );
-}
-function LigasTab() {
-  return (
-    <TabSlideWrapper routeName="Ligas">
-      <LigasStack />
-    </TabSlideWrapper>
-  );
-}
-function PerfilTab() {
-  return (
-    <TabSlideWrapper routeName="Perfil">
-      <PerfilScreen />
-    </TabSlideWrapper>
-  );
-}
+// Screens directas sin wrappers
+const InicioTab = InicioScreen;
+const EquiposTab = EquiposScreen;
+const TorneosTab = TorneosScreen;
+const PerfilTab = PerfilScreen;
+
+const styles = StyleSheet.create({
+  tabButton: {
+    flex: 1,
+    height: "100%",
+    alignSelf: "stretch",
+    padding: 0,
+    margin: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    outlineStyle: "none",
+  },
+  tabBar: {
+    position: "absolute",
+    left: 20,
+    right: 20,
+    bottom: 20,
+    height: 70,
+    borderRadius: 35,
+    overflow: "hidden",
+    backgroundColor: "transparent",
+    borderTopWidth: 0,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.3)",
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowOffset: { width: 0, height: 10 },
+    shadowRadius: 30,
+    elevation: 10,
+    paddingVertical: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
+  tabBarItem: {
+    height: 70,
+    padding: 0,
+    margin: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 0,
+  },
+  tabBarIcon: {
+    marginTop: 0,
+    marginBottom: 0,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  blurBackground: {
+    flex: 1,
+    borderRadius: 35,
+    backgroundColor: "rgba(255,255,255,0.15)",
+    overflow: "hidden",
+  },
+});
 
 export default function BottomTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="Partidos"
+      initialRouteName="Inicio"
       sceneContainerStyle={{ backgroundColor: "transparent" }}
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarShowLabel: false,
-        tabBarActiveTintColor: "#006c4f",
-        tabBarInactiveTintColor: "#1e293b",
+        tabBarActiveTintColor: "#006c4f", // Verde brand para seleccionado
+        tabBarInactiveTintColor: "#6b7280", // Gris para no seleccionados
 
-        // Botón sin <a> en web → sin padding 5px
         tabBarButton: (p) => <TabButton {...p} />,
 
-        // Asegura cero padding en todos los contenedores
-        tabBarItemStyle: {
-          height: 70,
-          padding: 0,
-          margin: 0,
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: 0,
-        },
-        tabBarIconStyle: {
-          marginTop: 0,
-          marginBottom: 0,
-          alignItems: "center",
-          justifyContent: "center",
-        },
-        tabBarStyle: {
-          position: "absolute",
-          left: 20,
-          right: 20,
-          bottom: 20,
-          height: 70,
-          borderRadius: 40,
-          overflow: "hidden",
-          backgroundColor: "transparent",
-          borderTopWidth: 0,
-          shadowColor: "#000",
-          shadowOpacity: 0.1,
-          shadowOffset: { width: 0, height: 4 },
-          shadowRadius: 10,
-          elevation: 6,
-          paddingVertical: 0,
-          paddingTop: 0,
-          paddingBottom: 0,
-        },
+        tabBarItemStyle: styles.tabBarItem,
+        tabBarIconStyle: styles.tabBarIcon,
+        tabBarStyle: styles.tabBar,
+        
         tabBarBackground: () => (
           <BlurView
             tint="light"
-            intensity={50}
-            style={{
-              flex: 1,
-              borderRadius: 40,
-              backgroundColor: "rgba(255,255,255,0.3)",
-            }}
+            intensity={90}
+            style={styles.blurBackground}
           />
         ),
+        
         tabBarIcon: ({ focused, color }) => (
           <IconWithBounce
             routeName={route.name as keyof RootTabParamList}
@@ -182,8 +177,9 @@ export default function BottomTabs() {
         ),
       })}
     >
-      <Tab.Screen name="Partidos" component={PartidosTab} />
-      <Tab.Screen name="Ligas" component={LigasTab} />
+      <Tab.Screen name="Inicio" component={InicioTab} />
+      <Tab.Screen name="Equipos" component={EquiposTab} />
+      <Tab.Screen name="Torneos" component={TorneosTab} />
       <Tab.Screen name="Perfil" component={PerfilTab} />
     </Tab.Navigator>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,8 +10,8 @@ import {
   Platform,
   StyleSheet,
   Image,
+  Animated,
 } from 'react-native';
-import Animated, { FadeInUp, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { CheckCircleIcon } from 'react-native-heroicons/solid';
 import * as Haptics from 'expo-haptics';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -27,17 +27,15 @@ export default function RegistroContactoScreen({ navigation, route }: Props) {
     email: false,
   });
 
-  const progressWidth = useSharedValue(0);
+  const progressWidth = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    progressWidth.value = withTiming(66.66, { duration: 800 });
+    Animated.timing(progressWidth, {
+      toValue: 66.66,
+      duration: 800,
+      useNativeDriver: false,
+    }).start();
   }, []);
-
-  const animatedProgressStyle = useAnimatedStyle(() => {
-    return {
-      width: `${progressWidth.value}%`,
-    };
-  });
 
   // Validación de email simple
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -106,7 +104,15 @@ export default function RegistroContactoScreen({ navigation, route }: Props) {
               </Text>
             </View>
             <View style={styles.progressBarBackground}>
-              <Animated.View style={[styles.progressBarFilled, animatedProgressStyle]} />
+              <Animated.View
+                style={[
+                  styles.progressBarFilled,
+                  { width: progressWidth.interpolate({
+                    inputRange: [0, 100],
+                    outputRange: ['0%', '100%']
+                  })}
+                ]}
+              />
             </View>
           </View>
 
@@ -119,7 +125,7 @@ export default function RegistroContactoScreen({ navigation, route }: Props) {
           </Text>
 
           {/* Formulario */}
-          <Animated.View entering={FadeInUp.delay(300).duration(600)} style={styles.formContainer}>
+          <View style={styles.formContainer}>
             {/* Teléfono */}
             <View>
               <View style={styles.labelRow}>
@@ -184,7 +190,7 @@ export default function RegistroContactoScreen({ navigation, route }: Props) {
                 enviarte notificaciones importantes.
               </Text>
             </View>
-          </Animated.View>
+          </View>
 
           {/* Botones */}
           <View style={styles.buttonContainer}>

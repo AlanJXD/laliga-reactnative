@@ -12,7 +12,6 @@ import {
   Image,
   StyleSheet,
 } from 'react-native';
-import Animated, { FadeInUp } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { CheckCircleIcon } from 'react-native-heroicons/solid';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -161,7 +160,7 @@ export default function VerificacionCorreoScreen({ navigation, route }: Props) {
           </Text>
 
           {/* Inputs de código */}
-          <Animated.View entering={FadeInUp.delay(300).duration(600)} style={styles.codeInputsContainer}>
+          <View style={styles.codeInputsContainer}>
             {code.map((digit, index) => (
               <View key={index} style={styles.codeInputWrapper}>
                 <TextInput
@@ -182,7 +181,7 @@ export default function VerificacionCorreoScreen({ navigation, route }: Props) {
                 )}
               </View>
             ))}
-          </Animated.View>
+          </View>
 
           {/* Indicador visual de progreso */}
           <View style={styles.progressIndicatorContainer}>
